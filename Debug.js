@@ -1,10 +1,11 @@
+//import { THREE } from "https://code4fukui.github.io/egxr.js/egxr.js";
 import { loadFile } from "./loadFile.js";
 
 export class Debug {
 
   constructor() {
     this._camera = new THREE.OrthographicCamera(0, 1, 1, 0, 0, 1);
-    this._geometry = new THREE.PlaneBufferGeometry();
+    this._geometry = new THREE.PlaneGeometry();
 
     const shadersPromises = [
       loadFile('shaders/debug/vertex.glsl'),

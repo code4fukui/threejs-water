@@ -1,17 +1,11 @@
-import { loadFile } from "./loadFile.js";
-import { WaterSimulation } from "./WaterSimulation.js";
-import { Caustics } from "./Caustics.js";
-import { Water } from "./Water.js";
-import { Pool } from "./Pool.js";
-import { Debug } from "./Debug.js";
+//import * as THREE from "https://cdnjs.cloudflare.com/ajax/libs/three.js/0.170.0/three.module.min.js";
+//import TrackballControls from "https://cdn.jsdelivr.net/npm/three-trackballcontrols@0.9.0/index.min.js";
+import { WaterSim } from "./WaterSim.js";
 
 const canvas = document.getElementById('canvas');
 
 const width = canvas.width;
 const height = canvas.height;
-
-// Shader chunks
-THREE.ShaderChunk['utils'] = await loadFile('shaders/utils.glsl');
 
 // Create Renderer
 const camera = new THREE.PerspectiveCamera(75, width / height, 0.01, 100);
@@ -22,11 +16,9 @@ const renderer = new THREE.WebGLRenderer({canvas: canvas, antialias: true, alpha
 renderer.setSize(width, height);
 renderer.autoClear = false;
 
-// Light direction
-const light = [0.7559289460184544, 0.7559289460184544, -0.3779644730092272];
-
 // Create mouse Controls
 const controls = new THREE.TrackballControls(camera, canvas);
+//const controls = new TrackballControls(camera, canvas);
 
 controls.screen.width = width;
 controls.screen.height = height;
@@ -46,47 +38,11 @@ for (const vertex of targetgeometry.vertices) {
 }
 const targetmesh = new THREE.Mesh(targetgeometry);
 
-// Textures
-const cubetextureloader = new THREE.CubeTextureLoader();
-
-const textureCube = cubetextureloader.load([
-  'xpos.jpg', 'xneg.jpg',
-  'ypos.jpg', 'ypos.jpg',
-  'zpos.jpg', 'zneg.jpg',
-]);
-
-const textureloader = new THREE.TextureLoader();
-
-const tiles = textureloader.load('tiles.jpg');
-
-const waterSimulation = new WaterSimulation();
-const water = new Water(light, tiles, textureCube);
-const caustics = new Caustics(water.geometry, light);
-const pool = new Pool(light, tiles);
-
-const debug = new Debug();
-
+const watersim = await WaterSim.create();
 
 // Main rendering loop
-const white = new THREE.Color('white');
 function animate() {
-  waterSimulation.stepSimulation(renderer);
-  waterSimulation.updateNormals(renderer);
-
-  const waterTexture = waterSimulation.texture.texture;
-
-  caustics.update(renderer, waterTexture);
-
-  const causticsTexture = caustics.texture.texture;
-
-  debug.draw(renderer, causticsTexture);
-
-  renderer.setRenderTarget(null);
-  renderer.setClearColor(white, 1);
-  renderer.clear();
-
-  water.draw(renderer, waterTexture, causticsTexture, camera);
-  pool.draw(renderer, waterTexture, causticsTexture, camera);
+  watersim.draw(renderer, camera);
 
   controls.update();
 
@@ -105,17 +61,14 @@ function onMouseMove(event) {
   const intersects = raycaster.intersectObject(targetmesh);
 
   for (let intersect of intersects) {
-    waterSimulation.addDrop(renderer, intersect.point.x, intersect.point.z, 0.03, 0.04);
+    watersim.addDrop(renderer, intersect.point.x, intersect.point.z, 0.03, 0.04);
   }
 }
-
-const loaded = [waterSimulation.loaded, caustics.loaded, water.loaded, pool.loaded, debug.loaded];
-await Promise.all(loaded);
 
 canvas.addEventListener('mousemove', { handleEvent: onMouseMove });
 
 for (let i = 0; i < 20; i++) {
-  waterSimulation.addDrop(
+  watersim.addDrop(
     renderer,
     Math.random() * 2 - 1, Math.random() * 2 - 1,
     0.03, (i & 1) ? 0.02 : -0.02

@@ -1,3 +1,4 @@
+//import { THREE } from "https://code4fukui.github.io/egxr.js/egxr.js";
 import { loadFile } from "./loadFile.js";
 
 export class Pool {

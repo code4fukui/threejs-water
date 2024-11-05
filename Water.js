@@ -1,9 +1,10 @@
+//import { THREE } from "https://code4fukui.github.io/egxr.js/egxr.js";
 import { loadFile } from "./loadFile.js";
 
 export class Water {
 
   constructor(light, tiles, textureCube) {
-    this.geometry = new THREE.PlaneBufferGeometry(2, 2, 200, 200);
+    this.geometry = new THREE.PlaneGeometry(2, 2, 200, 200);
 
     const shadersPromises = [
       loadFile('shaders/water/vertex.glsl'),

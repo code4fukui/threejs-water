@@ -1,3 +1,5 @@
+//import { THREE } from "https://code4fukui.github.io/egxr.js/egxr.js";
+//import * as THREE from "https://cdnjs.cloudflare.com/ajax/libs/three.js/0.170.0/three.module.min.js";
 import { loadFile } from "./loadFile.js";
 
 const black = new THREE.Color('black');

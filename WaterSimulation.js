@@ -1,3 +1,4 @@
+//import { THREE } from "https://code4fukui.github.io/egxr.js/egxr.js";
 import { loadFile } from "./loadFile.js";
 
 export class WaterSimulation {
@@ -5,7 +6,7 @@ export class WaterSimulation {
   constructor() {
     this._camera = new THREE.OrthographicCamera(0, 1, 1, 0, 0, 2000);
 
-    this._geometry = new THREE.PlaneBufferGeometry(2, 2);
+    this._geometry = new THREE.PlaneGeometry(2, 2);
 
     this._textureA = new THREE.WebGLRenderTarget(256, 256, {type: THREE.FloatType});
     this._textureB = new THREE.WebGLRenderTarget(256, 256, {type: THREE.FloatType});
