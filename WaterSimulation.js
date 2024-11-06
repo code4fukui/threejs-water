@@ -8,8 +8,8 @@ export class WaterSimulation {
 
     this._geometry = new THREE.PlaneGeometry(2, 2);
 
-    this._textureA = new THREE.WebGLRenderTarget(256, 256, {type: THREE.FloatType});
-    this._textureB = new THREE.WebGLRenderTarget(256, 256, {type: THREE.FloatType});
+    this._textureA = new THREE.WebGLRenderTarget(256, 256, { type: THREE.FloatType });
+    this._textureB = new THREE.WebGLRenderTarget(256, 256, { type: THREE.FloatType });
     this.texture = this._textureA;
 
     const shadersPromises = [
@@ -19,14 +19,16 @@ export class WaterSimulation {
       loadFile('shaders/simulation/update_fragment.glsl'),
     ];
 
+    const deltat = 1 / 256 * .1; // for 120fps
+
     this.loaded = Promise.all(shadersPromises)
         .then(([vertexShader, dropFragmentShader, normalFragmentShader, updateFragmentShader]) => {
       const dropMaterial = new THREE.RawShaderMaterial({
         uniforms: {
-            center: { value: [0, 0] },
-            radius: { value: 0 },
-            strength: { value: 0 },
-            texture: { value: null },
+          center: { value: [0, 0] },
+          radius: { value: 0 },
+          strength: { value: 0 },
+          texture: { value: null },
         },
         vertexShader: vertexShader,
         fragmentShader: dropFragmentShader,
@@ -34,8 +36,8 @@ export class WaterSimulation {
 
       const normalMaterial = new THREE.RawShaderMaterial({
         uniforms: {
-            delta: { value: [1 / 256, 1 / 256] },  // TODO: Remove this useless uniform and hardcode it in shaders?
-            texture: { value: null },
+          delta: { value: [deltat, deltat] },  // TODO: Remove this useless uniform and hardcode it in shaders?
+          texture: { value: null },
         },
         vertexShader: vertexShader,
         fragmentShader: normalFragmentShader,
@@ -43,8 +45,8 @@ export class WaterSimulation {
 
       const updateMaterial = new THREE.RawShaderMaterial({
         uniforms: {
-            delta: { value: [1 / 256, 1 / 256] },  // TODO: Remove this useless uniform and hardcode it in shaders?
-            texture: { value: null },
+          delta: { value: [deltat, deltat] },  // TODO: Remove this useless uniform and hardcode it in shaders?
+          texture: { value: null },
         },
         vertexShader: vertexShader,
         fragmentShader: updateFragmentShader,
@@ -66,6 +68,14 @@ export class WaterSimulation {
   }
 
   stepSimulation(renderer) {
+    const now = performance.now();
+    const fps = Math.max(Math.floor(1000 / (now - this._bkt)), 60);
+    this._bkt = now;
+    const d = fps > 60 ? 1 / 256 / 2 : 1 / 256; // fps 60 or 120
+    const delta = [d, d];
+    this._normalMesh.material.uniforms.delta.value = delta;
+    this._updateMesh.material.uniforms.delta.value = delta;
+
     this._render(renderer, this._updateMesh);
   }
 

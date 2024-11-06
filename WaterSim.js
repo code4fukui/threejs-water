@@ -8,17 +8,20 @@ import { Pool } from "./Pool.js";
 import { Debug } from "./Debug.js";
 
 const white = new THREE.Color('white');
+const black = new THREE.Color('black');
+const gray = new THREE.Color('gray');
+const bgcolor = gray;
 
 export class WaterSim {
   static async create() {
     // Shader chunks
     THREE.ShaderChunk['utils'] = await loadFile('shaders/utils.glsl');
+
     // Light direction
     const light = [0.7559289460184544, 0.7559289460184544, -0.3779644730092272];
 
     // Textures
     const cubetextureloader = new THREE.CubeTextureLoader();
-
     const textureCube = cubetextureloader.load([
       'xpos.jpg', 'xneg.jpg',
       'ypos.jpg', 'ypos.jpg',
@@ -26,7 +29,6 @@ export class WaterSim {
     ]);
 
     const textureloader = new THREE.TextureLoader();
-
     const tiles = textureloader.load('tiles.jpg');
 
     const waterSimulation = new WaterSimulation();
@@ -64,10 +66,10 @@ export class WaterSim {
 
     const causticsTexture = caustics.texture.texture;
 
-    debug.draw(renderer, causticsTexture);
+    //debug.draw(renderer, causticsTexture);
 
     renderer.setRenderTarget(null);
-    renderer.setClearColor(white, 1);
+    renderer.setClearColor(bgcolor, 1);
     renderer.clear();
 
     water.draw(renderer, waterTexture, causticsTexture, camera);

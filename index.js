@@ -3,16 +3,18 @@
 import { WaterSim } from "./WaterSim.js";
 
 const canvas = document.getElementById('canvas');
+canvas.width = innerWidth;
+canvas.height = innerHeight;
 
 const width = canvas.width;
 const height = canvas.height;
 
 // Create Renderer
 const camera = new THREE.PerspectiveCamera(75, width / height, 0.01, 100);
-camera.position.set(0.426, 0.677, -2.095);
+camera.position.set(0.426, 0.677 + 0.8, -2.095 + 0.5);
 camera.rotation.set(2.828, 0.191, 3.108);
 
-const renderer = new THREE.WebGLRenderer({canvas: canvas, antialias: true, alpha: true});
+const renderer = new THREE.WebGLRenderer({ canvas: canvas, antialias: true, alpha: true });
 renderer.setSize(width, height);
 renderer.autoClear = false;
 
@@ -60,19 +62,40 @@ function onMouseMove(event) {
 
   const intersects = raycaster.intersectObject(targetmesh);
 
+  //const radius = 0.03;
+  //const strength = 0.04;
+  const radius = 0.1;
+  const strength = 0.01;
   for (let intersect of intersects) {
-    watersim.addDrop(renderer, intersect.point.x, intersect.point.z, 0.03, 0.04);
+    watersim.addDrop(renderer, intersect.point.x, intersect.point.z, radius, strength);
   }
 }
 
 canvas.addEventListener('mousemove', { handleEvent: onMouseMove });
 
+//const radius = 0.03;
+const radius = 0.3;
+//const strength = 0.02;
+const strength = 0.2;
 for (let i = 0; i < 20; i++) {
   watersim.addDrop(
     renderer,
     Math.random() * 2 - 1, Math.random() * 2 - 1,
-    0.03, (i & 1) ? 0.02 : -0.02
+    radius, ((i & 1) ? 1 : -1) * strength
   );
 }
 
 animate();
+
+setInterval(() => {
+  const radius = 0.03;
+  const strength = 0.02;
+  const ndrops = 3;
+  for (let i = 0; i < ndrops; i++) {
+    watersim.addDrop(
+      renderer,
+      Math.random() * 2 - 1, Math.random() * 2 - 1,
+      radius, strength
+    );
+  }
+}, 100);
