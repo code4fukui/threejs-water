@@ -59,11 +59,9 @@ export class WaterSim {
 
     waterSimulation.stepSimulation(renderer);
     waterSimulation.updateNormals(renderer);
-
     const waterTexture = waterSimulation.texture.texture;
 
     caustics.update(renderer, waterTexture);
-
     const causticsTexture = caustics.texture.texture;
 
     //debug.draw(renderer, causticsTexture);
