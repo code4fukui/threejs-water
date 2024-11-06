@@ -11,7 +11,7 @@ export class Caustics {
 
     this._geometry = lightFrontGeometry;
 
-    this.texture = new THREE.WebGLRenderTarget(1024, 1024, {type: THREE.UNSIGNED_BYTE});
+    this.texture = new THREE.WebGLRenderTarget(1024, 1024, { type: THREE.UNSIGNED_BYTE });
 
     const shadersPromises = [
       loadFile('shaders/caustics/vertex.glsl'),
